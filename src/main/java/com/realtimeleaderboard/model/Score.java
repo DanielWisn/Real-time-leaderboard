@@ -2,6 +2,7 @@ package com.realtimeleaderboard.model;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -23,5 +24,15 @@ public class Score {
     private Integer score;
 
     @Column(nullable = false)
-    private Date date;
+    private LocalDateTime date;
+
+    public Score() {
+    }
+
+    public Score(User user, Game game, Integer score, LocalDateTime date) {
+        this.user = user;
+        this.game = game;
+        this.score = score;
+        this.date = date;
+    }
 }

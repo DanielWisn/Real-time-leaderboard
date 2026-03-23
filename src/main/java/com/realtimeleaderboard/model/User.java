@@ -1,5 +1,6 @@
 package com.realtimeleaderboard.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,6 +18,7 @@ public class User {
     private String userName;
 
     @Column(nullable = false)
+    @JsonIgnore
     private String password;
 
 }

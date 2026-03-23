@@ -17,4 +17,8 @@ public class GameService {
     public List<Game> getAllGames(){
         return this.gameRepository.findAll();
     }
+
+    public Game getGameById(int id){
+        return this.gameRepository.findById(id).get();
+    }
 }
