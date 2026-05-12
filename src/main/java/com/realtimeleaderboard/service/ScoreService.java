@@ -13,13 +13,18 @@ import java.util.List;
 public class ScoreService {
     private final ScoreRepository scoreRepository;
     private final GameService gameService;
+
     public ScoreService(ScoreRepository scoreRepository, GameService gameService) {
         this.scoreRepository = scoreRepository;
         this.gameService = gameService;
     }
 
     public List<Score> getAllOrderByScoreDesc() {
-        return scoreRepository.findAllByOrderByScoreDesc();
+        return this.scoreRepository.findAllByOrderByScoreDesc();
+    }
+
+    public List<Score> getScoresByUserId(Long userId) {
+        return this.scoreRepository.findScoresByUserIdOrderByScoreDesc(userId);
     }
 
     public Score save(Integer score, Integer gameId, User user) {
@@ -28,5 +33,9 @@ public class ScoreService {
         Game game = this.gameService.getGameById(gameId);
         Score scoreEntity = new Score(user,game,score,now);
         return this.scoreRepository.save(scoreEntity);
+    }
+
+    public List<Object[]> findUserMaxScores(User user){
+        return this.scoreRepository.findUserMaxScores(user);
     }
 }

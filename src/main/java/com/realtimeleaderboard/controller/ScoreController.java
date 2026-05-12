@@ -1,9 +1,11 @@
 package com.realtimeleaderboard.controller;
 
 import com.realtimeleaderboard.model.Score;
+import com.realtimeleaderboard.security.CustomUserDetails;
 import com.realtimeleaderboard.service.ScoreService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,8 +24,13 @@ public class ScoreController {
         return ResponseEntity.ok(this.scoreService.getAllOrderByScoreDesc());
     }
 
-//    @PostMapping("/save")
-//    public ResponseEntity<Score> save(@RequestParam Integer score, @RequestParam Integer gameId){
-//
-//    }
+    @GetMapping("/userScore")
+    public ResponseEntity<List<Score>> findUserScores(@AuthenticationPrincipal CustomUserDetails currentUser){
+        return ResponseEntity.ok(this.scoreService.getScoresByUserId(currentUser.getId()));
+    }
+
+    @PostMapping("/save")
+    public ResponseEntity<Score> save(@RequestParam Integer score, @RequestParam Integer gameId, @AuthenticationPrincipal CustomUserDetails currentUser){
+        return ResponseEntity.status(HttpStatus.CREATED).body(this.scoreService.save(score,gameId,currentUser.getUser()));
+    }
 }
