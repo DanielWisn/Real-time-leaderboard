@@ -21,4 +21,9 @@ public class GameService {
     public Game getGameById(int id){
         return this.gameRepository.findById(id).get();
     }
+
+    public Game createGame(String title){
+        Game game = new Game(title);
+        return this.gameRepository.save(game);
+    }
 }

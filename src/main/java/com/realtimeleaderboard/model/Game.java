@@ -13,4 +13,12 @@ public class Game {
 
     @Column(nullable = false)
     private String title;
+
+    public Game(){
+
+    }
+
+    public Game(String title){
+        this.title = title;
+    }
 }

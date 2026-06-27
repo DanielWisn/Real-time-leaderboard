@@ -1,5 +1,6 @@
 package com.realtimeleaderboard.controller;
 
+import com.realtimeleaderboard.DTO.RegisterRequest;
 import com.realtimeleaderboard.model.User;
 import com.realtimeleaderboard.service.UserService;
 import org.springframework.http.HttpStatus;
@@ -28,7 +29,7 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<User> register(@RequestBody String username, @RequestBody String password){
-        return ResponseEntity.status(HttpStatus.CREATED).body(this.userService.register(username,password));
+    public ResponseEntity<User> register(@RequestBody RegisterRequest registerRequest){
+        return ResponseEntity.status(HttpStatus.CREATED).body(this.userService.register(registerRequest.username(), registerRequest.password()));
     }
 }

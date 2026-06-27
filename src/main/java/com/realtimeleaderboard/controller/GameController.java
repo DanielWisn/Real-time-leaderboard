@@ -1,13 +1,11 @@
 package com.realtimeleaderboard.controller;
 
+import com.realtimeleaderboard.DTO.CreateGameRequest;
 import com.realtimeleaderboard.model.Game;
 import com.realtimeleaderboard.service.GameService;
-import com.realtimeleaderboard.service.UserService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -28,5 +26,10 @@ public class GameController {
     @GetMapping(path="/{id}")
     public ResponseEntity<Game> getGameById(@PathVariable Integer id){
         return ResponseEntity.ok(this.gameService.getGameById(id));
+    }
+
+    @PostMapping()
+    public ResponseEntity<Game> createGame(@RequestBody CreateGameRequest request){
+        return ResponseEntity.status(HttpStatus.CREATED).body(this.gameService.createGame(request.title()));
     }
 }
