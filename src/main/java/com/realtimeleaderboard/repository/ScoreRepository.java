@@ -1,6 +1,5 @@
 package com.realtimeleaderboard.repository;
 
-import com.realtimeleaderboard.model.Game;
 import com.realtimeleaderboard.model.Score;
 import com.realtimeleaderboard.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;

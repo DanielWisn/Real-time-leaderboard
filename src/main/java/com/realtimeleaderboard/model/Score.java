@@ -1,11 +1,15 @@
 package com.realtimeleaderboard.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name="scores")
+@Getter
+@Setter
 public class Score {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)

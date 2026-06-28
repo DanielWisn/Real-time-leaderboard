@@ -28,7 +28,7 @@ public class ScoreService {
     }
 
     public Score save(Integer score, Integer gameId, User user) {
-
+        System.out.println(user.getId() + " " + score + " " + gameId);
         LocalDateTime now = LocalDateTime.now();
         Game game = this.gameService.getGameById(gameId);
         Score scoreEntity = new Score(user,game,score,now);
