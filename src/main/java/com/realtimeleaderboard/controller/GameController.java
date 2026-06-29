@@ -32,4 +32,10 @@ public class GameController {
     public ResponseEntity<Game> createGame(@RequestBody CreateGameRequest request){
         return ResponseEntity.status(HttpStatus.CREATED).body(this.gameService.createGame(request.title()));
     }
+
+    @DeleteMapping(path="/{id}")
+    public HttpStatus deleteGameById(@PathVariable Integer id){
+        this.gameService.deleteGame(id);
+        return HttpStatus.NO_CONTENT;
+    }
 }

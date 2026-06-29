@@ -26,4 +26,8 @@ public class GameService {
         Game game = new Game(title);
         return this.gameRepository.save(game);
     }
+
+    public void deleteGame(int id){
+        this.gameRepository.deleteById(id);
+    }
 }
