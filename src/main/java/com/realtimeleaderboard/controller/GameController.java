@@ -24,7 +24,7 @@ public class GameController {
     }
 
     @GetMapping(path="/{id}")
-    public ResponseEntity<Game> getGameById(@PathVariable Integer id){
+    public ResponseEntity<Game> getGameById(@PathVariable Long id){
         return ResponseEntity.ok(this.gameService.getGameById(id));
     }
 
@@ -34,7 +34,7 @@ public class GameController {
     }
 
     @DeleteMapping(path="/{id}")
-    public HttpStatus deleteGameById(@PathVariable Integer id){
+    public HttpStatus deleteGameById(@PathVariable Long id){
         this.gameService.deleteGame(id);
         return HttpStatus.NO_CONTENT;
     }

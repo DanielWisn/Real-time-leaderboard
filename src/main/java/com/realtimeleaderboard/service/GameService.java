@@ -18,8 +18,9 @@ public class GameService {
         return this.gameRepository.findAll();
     }
 
-    public Game getGameById(int id){
-        return this.gameRepository.findById(id).get();
+    public Game getGameById(Long id){
+
+        return this.gameRepository.findById(id).orElseThrow(() -> new RuntimeException("Game not found"));
     }
 
     public Game createGame(String title){
@@ -27,7 +28,7 @@ public class GameService {
         return this.gameRepository.save(game);
     }
 
-    public void deleteGame(int id){
+    public void deleteGame(Long id){
         this.gameRepository.deleteById(id);
     }
 }

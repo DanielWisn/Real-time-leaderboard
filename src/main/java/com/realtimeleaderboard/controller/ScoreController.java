@@ -1,8 +1,14 @@
 package com.realtimeleaderboard.controller;
 
+import com.realtimeleaderboard.DTO.LeaderboardEntry;
+import com.realtimeleaderboard.DTO.LeaderboardEntryResponse;
+import com.realtimeleaderboard.model.Game;
 import com.realtimeleaderboard.model.Score;
 import com.realtimeleaderboard.security.CustomUserDetails;
+import com.realtimeleaderboard.service.GameService;
+import com.realtimeleaderboard.service.LeaderboardService;
 import com.realtimeleaderboard.service.ScoreService;
+import com.realtimeleaderboard.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -14,14 +20,36 @@ import java.util.List;
 @RequestMapping("/scores")
 public class ScoreController {
     private final ScoreService scoreService;
+    private final LeaderboardService leaderboardService;
+    private final GameService gameService;
+    private final UserService userService;
 
-    public ScoreController(ScoreService scoreService) {
+    public ScoreController(ScoreService scoreService, LeaderboardService leaderboardService, GameService gameService, UserService userService) {
         this.scoreService = scoreService;
+        this.leaderboardService = leaderboardService;
+        this.gameService = gameService;
+        this.userService = userService;
     }
 
-    @GetMapping("/leaderboard")
-    public ResponseEntity<List<Score>> findAllByOrderByScoreDesc(){
-        return ResponseEntity.ok(this.scoreService.getAllOrderByScoreDesc());
+    @GetMapping("/leaderboard/{gameId}")
+    public ResponseEntity<List<LeaderboardEntryResponse>> getLeaderboardForGame(@PathVariable Long gameId, @RequestParam(defaultValue = "10") int top) {
+        List<LeaderboardEntry> leaderboardEntries = this.leaderboardService.getTopN(gameId, 100);
+
+        Game game = gameService.getGameById(gameId);
+
+        List<LeaderboardEntryResponse> response = leaderboardEntries.stream()
+                .map(entry -> {
+                    String username = userService.getUserById(entry.userId()).getUsername();
+                    return new LeaderboardEntryResponse(
+                            entry.rank(),
+                            username,
+                            game.getTitle(),
+                            entry.score().intValue()
+                    );
+                })
+                .toList();
+
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/userScore")
@@ -30,7 +58,7 @@ public class ScoreController {
     }
 
     @PostMapping("/save")
-    public ResponseEntity<Score> save(@RequestParam Integer score, @RequestParam Integer gameId, @AuthenticationPrincipal CustomUserDetails currentUser){
+    public ResponseEntity<Score> save(@RequestParam Integer score, @RequestParam Long gameId, @AuthenticationPrincipal CustomUserDetails currentUser){
         return ResponseEntity.status(HttpStatus.CREATED).body(this.scoreService.save(score,gameId,currentUser.getUser()));
     }
 }
