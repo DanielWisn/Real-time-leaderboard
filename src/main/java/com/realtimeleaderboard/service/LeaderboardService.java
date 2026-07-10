@@ -13,6 +13,7 @@ import java.util.Set;
 public class LeaderboardService {
 
     private static final String KEY_PREFIX = "leaderboard:game:";
+    private static final String GLOBAL_KEY = "leaderboard:global";
 
     private final RedisTemplate<String, String> redisTemplate;
 
@@ -24,22 +25,18 @@ public class LeaderboardService {
         return KEY_PREFIX + gameId;
     }
 
-    /**
-     * Submits a score to Redis. Only keeps the best (highest) score per user per game.
-     * Uses ZADD GT — Redis only updates the member if the new score is greater.
-     */
     public void submitScore(Long gameId, Long userId, double score) {
+        String member = String.valueOf(userId);
         Double current = redisTemplate.opsForZSet()
-                .score(key(gameId), String.valueOf(userId));
+                .score(key(gameId), member);
         if (current == null || score > current) {
-            redisTemplate.opsForZSet().add(key(gameId), String.valueOf(userId), score);
+            redisTemplate.opsForZSet().add(key(gameId), member, score);
+
+            double delta = score - (current != null ? current : 0.0);
+            redisTemplate.opsForZSet().incrementScore(GLOBAL_KEY, member, delta);
         }
     }
 
-    /**
-     * Returns the top N entries for a game, highest score first.
-     * Each entry contains the userId (as String) and their best score.
-     */
     public List<LeaderboardEntry> getTopN(Long gameId, int n) {
         Set<TypedTuple<String>> results = redisTemplate.opsForZSet()
                 .reverseRangeWithScores(key(gameId), 0, n - 1);
@@ -58,9 +55,33 @@ public class LeaderboardService {
         return entries;
     }
 
+    public List<LeaderboardEntry> getGlobalTopN(int n) {
+        Set<TypedTuple<String>> results = redisTemplate.opsForZSet()
+                .reverseRangeWithScores(GLOBAL_KEY, 0, n - 1);
+
+        List<LeaderboardEntry> entries = new ArrayList<>();
+        if (results == null) return entries;
+
+        int rank = 1;
+        for (TypedTuple<String> tuple : results) {
+            entries.add(new LeaderboardEntry(
+                    rank++,
+                    Long.parseLong(tuple.getValue()),
+                    tuple.getScore()
+            ));
+        }
+        return entries;
+    }
+
     public long getUserRank(Long gameId, Long userId) {
         Long rank = redisTemplate.opsForZSet()
                 .reverseRank(key(gameId), String.valueOf(userId));
-        return rank == null ? -1 : rank + 1; // Redis rank is 0-based
+        return rank == null ? -1 : rank + 1;
+    }
+
+    public long getUserGlobalRank(Long userId) {
+        Long rank = redisTemplate.opsForZSet()
+                .reverseRank(GLOBAL_KEY, String.valueOf(userId));
+        return rank == null ? -1 : rank + 1;
     }
 }

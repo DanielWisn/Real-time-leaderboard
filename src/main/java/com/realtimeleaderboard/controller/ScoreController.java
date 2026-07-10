@@ -1,5 +1,6 @@
 package com.realtimeleaderboard.controller;
 
+import com.realtimeleaderboard.DTO.GlobalLeaderboardResponse;
 import com.realtimeleaderboard.DTO.LeaderboardEntry;
 import com.realtimeleaderboard.DTO.LeaderboardEntryResponse;
 import com.realtimeleaderboard.model.Game;
@@ -31,9 +32,27 @@ public class ScoreController {
         this.userService = userService;
     }
 
-    @GetMapping("/leaderboard/{gameId}")
+    @GetMapping("/leaderboard")
+    public ResponseEntity<List<GlobalLeaderboardResponse>> getLeaderboard(@RequestParam(defaultValue = "10") int top){
+        List<LeaderboardEntry> leaderboardEntries = this.leaderboardService.getGlobalTopN(top);
+
+        List<GlobalLeaderboardResponse> response = leaderboardEntries.stream()
+                .map(entry -> {
+                    String username = userService.getUserById(entry.userId()).getUsername();
+                    return new GlobalLeaderboardResponse(
+                            entry.rank(),
+                            username,
+                            entry.score().intValue()
+                    );
+                })
+                .toList();
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/gameLeaderboard/{gameId}")
     public ResponseEntity<List<LeaderboardEntryResponse>> getLeaderboardForGame(@PathVariable Long gameId, @RequestParam(defaultValue = "10") int top) {
-        List<LeaderboardEntry> leaderboardEntries = this.leaderboardService.getTopN(gameId, 100);
+        List<LeaderboardEntry> leaderboardEntries = this.leaderboardService.getTopN(gameId, top);
 
         try {
             Game game = gameService.getGameById(gameId);
