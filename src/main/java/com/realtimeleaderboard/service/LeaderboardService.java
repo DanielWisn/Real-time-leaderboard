@@ -58,10 +58,6 @@ public class LeaderboardService {
         return entries;
     }
 
-    /**
-     * Returns a specific user's rank in a game (1-based, lower is better).
-     * Returns -1 if the user has no score for this game.
-     */
     public long getUserRank(Long gameId, Long userId) {
         Long rank = redisTemplate.opsForZSet()
                 .reverseRank(key(gameId), String.valueOf(userId));

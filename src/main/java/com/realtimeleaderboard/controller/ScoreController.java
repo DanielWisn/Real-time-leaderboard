@@ -35,21 +35,34 @@ public class ScoreController {
     public ResponseEntity<List<LeaderboardEntryResponse>> getLeaderboardForGame(@PathVariable Long gameId, @RequestParam(defaultValue = "10") int top) {
         List<LeaderboardEntry> leaderboardEntries = this.leaderboardService.getTopN(gameId, 100);
 
-        Game game = gameService.getGameById(gameId);
+        try {
+            Game game = gameService.getGameById(gameId);
+            List<LeaderboardEntryResponse> response = leaderboardEntries.stream()
+                    .map(entry -> {
+                        String username = userService.getUserById(entry.userId()).getUsername();
+                        return new LeaderboardEntryResponse(
+                                entry.rank(),
+                                username,
+                                game.getTitle(),
+                                entry.score().intValue()
+                        );
+                    })
+                    .toList();
 
-        List<LeaderboardEntryResponse> response = leaderboardEntries.stream()
-                .map(entry -> {
-                    String username = userService.getUserById(entry.userId()).getUsername();
-                    return new LeaderboardEntryResponse(
-                            entry.rank(),
-                            username,
-                            game.getTitle(),
-                            entry.score().intValue()
-                    );
-                })
-                .toList();
+            return ResponseEntity.ok(response);
+        }
+        catch (Exception e){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
 
-        return ResponseEntity.ok(response);
+    @GetMapping("/userRank/{gameId}")
+    public ResponseEntity<Long> findUserRanking(@AuthenticationPrincipal CustomUserDetails currentUser, @PathVariable Long gameId){
+        Long rank = this.leaderboardService.getUserRank(gameId, currentUser.getId());
+        if (rank == -1){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return ResponseEntity.ok(rank);
     }
 
     @GetMapping("/userScore")
