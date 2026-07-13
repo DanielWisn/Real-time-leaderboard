@@ -3,6 +3,7 @@ package com.realtimeleaderboard.controller;
 import com.realtimeleaderboard.DTO.GlobalLeaderboardResponse;
 import com.realtimeleaderboard.DTO.LeaderboardEntry;
 import com.realtimeleaderboard.DTO.LeaderboardEntryResponse;
+import com.realtimeleaderboard.DTO.MaxScoreResponse;
 import com.realtimeleaderboard.model.Game;
 import com.realtimeleaderboard.model.Score;
 import com.realtimeleaderboard.security.CustomUserDetails;
@@ -76,8 +77,17 @@ public class ScoreController {
     }
 
     @GetMapping("/userRank/{gameId}")
-    public ResponseEntity<Long> findUserRanking(@AuthenticationPrincipal CustomUserDetails currentUser, @PathVariable Long gameId){
+    public ResponseEntity<Long> findUserGameRanking(@AuthenticationPrincipal CustomUserDetails currentUser, @PathVariable Long gameId){
         Long rank = this.leaderboardService.getUserRank(gameId, currentUser.getId());
+        if (rank == -1){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return ResponseEntity.ok(rank);
+    }
+
+    @GetMapping("/userGlobalRank")
+    public ResponseEntity<Long> findUserGlobalRanking(@AuthenticationPrincipal CustomUserDetails currentUser){
+        Long rank = this.leaderboardService.getUserGlobalRank(currentUser.getId());
         if (rank == -1){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -92,5 +102,10 @@ public class ScoreController {
     @PostMapping("/save")
     public ResponseEntity<Score> save(@RequestParam Integer score, @RequestParam Long gameId, @AuthenticationPrincipal CustomUserDetails currentUser){
         return ResponseEntity.status(HttpStatus.CREATED).body(this.scoreService.save(score,gameId,currentUser.getUser()));
+    }
+
+    @GetMapping("/userMaxScores")
+    public ResponseEntity<List<MaxScoreResponse>> findUserMaxScores(@AuthenticationPrincipal CustomUserDetails current){
+        return ResponseEntity.ok(this.scoreService.findUserMaxScores(current.getUser()));
     }
 }

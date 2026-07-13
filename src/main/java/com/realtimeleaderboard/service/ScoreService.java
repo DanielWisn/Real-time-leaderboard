@@ -1,6 +1,7 @@
 package com.realtimeleaderboard.service;
 
 import com.realtimeleaderboard.DTO.LeaderboardEntry;
+import com.realtimeleaderboard.DTO.MaxScoreResponse;
 import com.realtimeleaderboard.model.Game;
 import com.realtimeleaderboard.model.Score;
 import com.realtimeleaderboard.model.User;
@@ -35,7 +36,7 @@ public class ScoreService {
         return this.scoreRepository.save(scoreEntity);
     }
 
-    public List<Object[]> findUserMaxScores(User user){
+    public List<MaxScoreResponse> findUserMaxScores(User user){
         return this.scoreRepository.findUserMaxScores(user);
     }
 }
