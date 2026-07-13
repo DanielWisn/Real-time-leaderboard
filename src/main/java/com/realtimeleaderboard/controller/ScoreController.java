@@ -1,9 +1,6 @@
 package com.realtimeleaderboard.controller;
 
-import com.realtimeleaderboard.DTO.GlobalLeaderboardResponse;
-import com.realtimeleaderboard.DTO.LeaderboardEntry;
-import com.realtimeleaderboard.DTO.LeaderboardEntryResponse;
-import com.realtimeleaderboard.DTO.MaxScoreResponse;
+import com.realtimeleaderboard.DTO.*;
 import com.realtimeleaderboard.model.Game;
 import com.realtimeleaderboard.model.Score;
 import com.realtimeleaderboard.security.CustomUserDetails;
@@ -11,11 +8,14 @@ import com.realtimeleaderboard.service.GameService;
 import com.realtimeleaderboard.service.LeaderboardService;
 import com.realtimeleaderboard.service.ScoreService;
 import com.realtimeleaderboard.service.UserService;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -107,5 +107,10 @@ public class ScoreController {
     @GetMapping("/userMaxScores")
     public ResponseEntity<List<MaxScoreResponse>> findUserMaxScores(@AuthenticationPrincipal CustomUserDetails current){
         return ResponseEntity.ok(this.scoreService.findUserMaxScores(current.getUser()));
+    }
+
+    @GetMapping("/report")
+    public ResponseEntity<List<TopPlayerResponse>> getTopPlayers(@RequestParam Long gameId, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to){
+        return ResponseEntity.ok(this.scoreService.getTopPlayers(gameId,from.atStartOfDay(),to.atTime(23,59,59)));
     }
 }

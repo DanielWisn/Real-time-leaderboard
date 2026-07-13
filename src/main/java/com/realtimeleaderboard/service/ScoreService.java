@@ -2,13 +2,16 @@ package com.realtimeleaderboard.service;
 
 import com.realtimeleaderboard.DTO.LeaderboardEntry;
 import com.realtimeleaderboard.DTO.MaxScoreResponse;
+import com.realtimeleaderboard.DTO.TopPlayerResponse;
 import com.realtimeleaderboard.model.Game;
 import com.realtimeleaderboard.model.Score;
 import com.realtimeleaderboard.model.User;
 import com.realtimeleaderboard.repository.ScoreRepository;
+import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -39,4 +42,8 @@ public class ScoreService {
     public List<MaxScoreResponse> findUserMaxScores(User user){
         return this.scoreRepository.findUserMaxScores(user);
     }
-}
+
+    public List<TopPlayerResponse> getTopPlayers(Long gameId, LocalDateTime start, LocalDateTime end){
+        return this.scoreRepository.findTopPlayersByGameAndPeriod(gameId,start,end);
+    }
+ }
