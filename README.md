@@ -1,5 +1,5 @@
 # Real-Time Leaderboard
-[![roadmap.sh](https://roadmap.sh/card/tall/6862e3aafe4c2c65d06e5673?variant=dark)](https://roadmap.sh/projects/realtime-leaderboard-system)
+Project idea from https://roadmap.sh/projects/realtime-leaderboard-system
 
 A backend system for a real-time competitive leaderboard service built with Spring Boot. Users can register, log in, submit scores for various games, and view live rankings. The system uses Redis sorted sets for efficient real-time leaderboard queries and PostgreSQL for persistent score history.
 
